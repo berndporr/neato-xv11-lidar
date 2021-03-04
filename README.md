@@ -1,101 +1,32 @@
-# How to interface the Neato XV11 LIDAR
+# How to interface the Neato XV11 LIDAR to the Raspberry PI
 
-This is a short documentation for the LIDAR used in the Neato XV11 vacuum robots. 
 The actual name of the sensor is Piccolo Laser Distance Sensor, abbreviated into LDS, but many different names are used to refer to it: Neato LDS, Neato lidar, XV-11 lidar, XV-11 sensor...
 
-**N.B.** I am talking about the sensors salvaged from Neato Robotics robots. If you want a snippet that works with the more recent 360 Laser Distance Sensor LDS-01, it is not here.
+This repository contains a C++ class which reads the coordinates
+and also does the motor control via hardware PWM of the RPI.
 
-The LIDAR has two connectors, one for the motor and one for the communication (serial port).
-Here is a photo of one of my specimen connected to a PC via a usb-to-serial ftdi dongle:
+Note that this is work in progress and is only sparsely documented at the moment.
 
-![](doc/ftdi.jpg)
+# Pinouts
 
-Note that the `LDS_RX` pin (the brown wire, more on the pinout below) is not used (I do not want to flash the LIDAR and anyways I do not know how to do it).
+## Data
 
-This repository contains an intentionally short C++ code that reads the steady flow the LIDAR sends to the host.
-Here is a screenshot of the output:
-
-![](doc/screenshot.png)
-
-I did not want to write any visualization code, this snipped is meant to be used direcly on linux-running robots.
-If you want some GUI to test your LIDAR, [check this](https://github.com/Xevel/NXV11) (beware, it requires python2 and vpython 6). A very nice printed base for the LIDAR is available [here](https://www.thingiverse.com/thing:796866/).
-Also check for the [USB2LDS](http://www.xevelabs.com/doku.php?id=product:usb2lds:usb2lds) module that guarantees steady motor RPM and provides the usb-to-serial functionality.
-
-## Hardware versions
-
-At least two major hardware versions of the LDS have been seen in the wild. Externally, they look identical, but they differ electrically.
-One way to know for sure which one you have is to open the top of the sensor (by removing the 4 screws maintaining the cap, but don't touch
-the 6 screws under the unit!) and to have a look at what is written at the pad where the red wire coming from the center is soldered.
-
-**N.B.** In all versions, LDS_TX and LDS_RX are a 8N1 serial port at **3.3V**. The baud rate is 115200.
-
-The connector of the LDS is a JST PH 2.0mm pitch with 4 pins.
-
-### 3.3V powered
-Found only in very early units of the XV-11. Sensor power consumption (does not include the motor): ~145mA @ 3.3V
-
-Pinout:
-* Red +3.3V
-* Brown LDS_RX
-* OrangeLDS_TX
-* Black GND
-
-### 5V powered
-
-Found in the vast majority of XV-11 units, and all newer models.
-Sensor current consumption (does not include the motor): ~45mA idle (not rotating), ~135mA in use (rotating) @ 5V
-If powered at 3.3V, you may get data. Or you may get some version information like the following:
-
-```
-Terminal ready
-:)
-Piccolo Laser Distance Scanner
-Copyright (c) 2009-2011 Neato Robotics, Inc.
-All Rights Reserved
-
-Loader  V2.5.15295
-CPU     F2802x/c001
-Serial  WTD04513AA-0233345
-LastCal [5371726C]
-Runtime V2.6.15295
-```
-
-Pinout:
 * Red +5V
 * Brown LDS_RX
 * OrangeLDS_TX
 * Black GND
 
-**N.B.** Once again, even for the 5V version, LDS_TX and LDS_RX at **3.3V**.
+LDS_TX and LDS_RX are at **3.3V**.
 
 ## Motor
-The motor has to be driven by the host. In the robot, it's that main board that drives it using PWM from the battery voltage of 12V, as it also controls the speed in closed loop. The motor can be powered at 3.3V continuous ( ~60mA ) in open loop, which will produce a turn rate of around 240rpm on a clean and recent sensor. Hair and dust can however create friction that will lower the rotation speed. Using the turn rate information contained in the data, a closed loop control can be implemented, and is recommended.
+The motor is driven by via the hard PWM pin of the RPI. See
+[neato_rpi_hardware.pdf] for the circuit which can be
+simply soldered on a matrix board and wired to the motor:
 
-Pinout:
 * Red PWR
 * BlackGND
 
-The connector of the motor is a JST PH 2.0mm pitch with 2 pins.
-
-## Firmware versions
-
-Firmware version can be retrieved by listening to what the sensor says immediately after power-up, or through the robot's API.
-
-### v2.1
-Only used in the early 3.3V versions of the hardware (and probably only in these).
-Data format is different from the one of following versions.
-
-### v2.4
-Used in the 5V and potentially in updated 3.3V versions too (needs confirmation).
-Data format is not compatible with v2.1.
-
-### v2.6
-Used in the 5V and potentially in updated 3.3V versions too (needs confirmation).
-Data format is the same as the one of v2.4.
-The menu items and secret menus have changed, and among other things, a little game has been added with the names of the people who did
-the reverse engineering as the bosses :D
-
-## Gotchas
+# Gotchas
 * The angle of the data is not aligned with the natural axis of the device. It seems that the first sample of the first packet is in fact looking at
 a -10° angle, not 0°. Needs confirmation.
 * v2.4 and above: The sensor needs to be turning between 180 and 349 rpm to transmit valid data. Above 349 rpm, the serial interface
@@ -152,3 +83,6 @@ def checksum(data):
 ```
 
 
+# Credit
+
+This is forked from Dmitry V. Sokolov's git repo: https://github.com/ssloy/neato-xv11-lidar
