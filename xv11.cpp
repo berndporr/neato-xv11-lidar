@@ -101,7 +101,7 @@ void Xv11::translate_data(unsigned char *buf) {
 			xyData[p].valid = !invalid;
 			if (!invalid) {
 				int j = (p*4+i);
-				double angle = j / (360 * M_PI);
+				double angle = (double)j / 360.0 * M_PI * 2;
 				double dist = dist_mm(data);
 				angleDistData[j].phi = angle;
 				angleDistData[j].r = dist;

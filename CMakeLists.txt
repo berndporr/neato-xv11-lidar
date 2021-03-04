@@ -49,6 +49,9 @@ install(TARGETS xv11_static EXPORT xv11_static-targets
 add_executable (printdata printdata.cpp)
 target_link_libraries(printdata xv11_static)
 
+add_executable (savedata savedata.cpp)
+target_link_libraries(savedata xv11_static)
+
 add_executable (printRPM printRPM.cpp)
 target_link_libraries(printRPM xv11_static)
 

@@ -103,16 +103,6 @@ rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-
-.PHONY : list_install_components/fast
-
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
@@ -123,6 +113,16 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -194,6 +194,19 @@ printdata: cmake_check_build_system
 printdata/fast:
 	$(MAKE) -f CMakeFiles/printdata.dir/build.make CMakeFiles/printdata.dir/build
 .PHONY : printdata/fast
+
+#=============================================================================
+# Target rules for targets named savedata
+
+# Build rule for target.
+savedata: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 savedata
+.PHONY : savedata
+
+# fast build rule for target.
+savedata/fast:
+	$(MAKE) -f CMakeFiles/savedata.dir/build.make CMakeFiles/savedata.dir/build
+.PHONY : savedata/fast
 
 #=============================================================================
 # Target rules for targets named printRPM
@@ -302,6 +315,33 @@ pwm.cpp.s:
 	$(MAKE) -f CMakeFiles/pwm.dir/build.make CMakeFiles/pwm.dir/pwm.cpp.s
 .PHONY : pwm.cpp.s
 
+savedata.o: savedata.cpp.o
+
+.PHONY : savedata.o
+
+# target to build an object file
+savedata.cpp.o:
+	$(MAKE) -f CMakeFiles/savedata.dir/build.make CMakeFiles/savedata.dir/savedata.cpp.o
+.PHONY : savedata.cpp.o
+
+savedata.i: savedata.cpp.i
+
+.PHONY : savedata.i
+
+# target to preprocess a source file
+savedata.cpp.i:
+	$(MAKE) -f CMakeFiles/savedata.dir/build.make CMakeFiles/savedata.dir/savedata.cpp.i
+.PHONY : savedata.cpp.i
+
+savedata.s: savedata.cpp.s
+
+.PHONY : savedata.s
+
+# target to generate assembly for a file
+savedata.cpp.s:
+	$(MAKE) -f CMakeFiles/savedata.dir/build.make CMakeFiles/savedata.dir/savedata.cpp.s
+.PHONY : savedata.cpp.s
+
 xv11.o: xv11.cpp.o
 
 .PHONY : xv11.o
@@ -342,13 +382,14 @@ help:
 	@echo "... install/local"
 	@echo "... install"
 	@echo "... rebuild_cache"
+	@echo "... edit_cache"
 	@echo "... xv11_static"
 	@echo "... xv11"
 	@echo "... printdata"
+	@echo "... savedata"
 	@echo "... list_install_components"
 	@echo "... printRPM"
 	@echo "... pwm"
-	@echo "... edit_cache"
 	@echo "... printRPM.o"
 	@echo "... printRPM.i"
 	@echo "... printRPM.s"
@@ -358,6 +399,9 @@ help:
 	@echo "... pwm.o"
 	@echo "... pwm.i"
 	@echo "... pwm.s"
+	@echo "... savedata.o"
+	@echo "... savedata.i"
+	@echo "... savedata.s"
 	@echo "... xv11.o"
 	@echo "... xv11.i"
 	@echo "... xv11.s"
