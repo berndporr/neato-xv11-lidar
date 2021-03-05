@@ -84,7 +84,7 @@ void Xv11::updateMotorPWM() {
 	//fprintf(stderr,"motorDrive = %d\n",motorDrive);
 }
 
-void Xv11::translate_data(unsigned char *buf) {
+void Xv11::raw2data(unsigned char *buf) {
 	currentRPM = rpm(buf);
 	motorDrive = motorDrive + (int)round((desiredRPM - currentRPM) * loopRPMgain);
 	updateMotorPWM();
@@ -99,22 +99,22 @@ void Xv11::translate_data(unsigned char *buf) {
 				double dist = dist_mm(data);
 				if (dist > 0) {
 					//fprintf(stderr,"%d,phi=%f,r=%f\n",j,angle,dist);
-					angleDistData[j].phi = angle;
-					angleDistData[j].r = dist;
-					xyData[j].x = cos(angle) * dist;
-					xyData[j].y = sin(angle) * dist;
-					angleDistData[j].valid = true;
-					xyData[j].valid = true;
+					xv11data[currentBufIdx][j].phi = angle;
+					xv11data[currentBufIdx][j].r = dist;
+					xv11data[currentBufIdx][j].x = cos(angle) * dist;
+					xv11data[currentBufIdx][j].y = sin(angle) * dist;
+					xv11data[currentBufIdx][j].valid = true;
 					dataAvailable = true;
 				} else {
-					xyData[j].valid = false;
+					xv11data[currentBufIdx][j].valid = false;
 				}
 			}
 		}
 	}
-	if (dataAvailable) {
-		newScanAvail();
+	if ( (dataAvailable) && (nullptr != dataInterface) ) {
+		dataInterface->newScanAvail(xv11data[currentBufIdx]);
 	}
+	currentBufIdx = !currentBufIdx;
 }
 
 void Xv11::run(Xv11* xv11) {
@@ -129,7 +129,7 @@ void Xv11::run(Xv11* xv11) {
 				// register all the 360 readings (90 packets, 22 bytesh each)
 				if (1!=read(xv11->tty_fd, buf+idx, 1)) break;
 			if (!(xv11->count_errors(buf))) { // if no errors during the transmission
-				xv11->translate_data(buf);  // then print the data to the screen
+				xv11->raw2data(buf);  // then print the data to the screen
 			}
 		}
 	}

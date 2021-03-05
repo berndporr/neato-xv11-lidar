@@ -1,24 +1,24 @@
 #include "xv11.h"
 
-class Xv11Print : public Xv11 {
+class DataInterface : public Xv11::DataInterface {
 public:
-	void newScanAvail() {
-		for(int j=0; j<10; j++) {
-			for(int i=0; i < n; i++) {
-				if (getXYData()[i].valid)
-					printf("%f\t%f\t%f\t%f\n",
-					       getXYData()[i].x,
-					       getXYData()[i].y,
-					       getAngleDistData()[i].r,
-					       getAngleDistData()[i].phi);
-			}
+	void newScanAvail(XV11Data (&data)[Xv11::n]) {
+		for(int i=0; i < Xv11::n; i++) {
+			if (data[i].valid)
+				printf("%f\t%f\t%f\t%f\n",
+				       data[i].x,
+				       data[i].y,
+				       data[i].r,
+				       data[i].phi);
 		}
 		fprintf(stderr,".");
 	}
 };
 
 int main(int, char **) {
-	Xv11Print xv11;
+	Xv11 xv11;
+	DataInterface dataInterface;
+	xv11.registerInterface(&dataInterface);
 	xv11.start();
 	do {
 	} while (!getchar());
