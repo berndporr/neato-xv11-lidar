@@ -48,7 +48,7 @@ the range finder.
 The data is transmitted via `DataInterface` where the abstract function
 `newScanAvail(XV11Data (&data)[Xv11::n])` needs to be implemented
 which then receives both the polar and Cartesian coordinates after
-a successful 360 degree scan. The register the `DataInterface` with
+a successful 360 degree scan. Register the `DataInterface` with
 `registerInterface`.
 
 ## Example program
