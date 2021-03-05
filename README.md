@@ -23,19 +23,39 @@ Connect the wires to the serial port of the Raspberry PI.
 LDS_TX and LDS_RX are at **3.3V**.
 
 ## Motor
-The motor is driven by via the hardware PWM pin of the RPI driving
-a 2N5550 transistor:
+The speed of the motor is controlled via the hardware PWM
+of the RPI driving a 2N5550 transistor:
 
 ![alt tag](motordrive.png)
 
-The circuit has only a few components and I used soldered the components
-on a matrix board where the two pin headers of the Alphabot
-fit nicely over the not used Arduino slot where also the
-unregulated power from the battery is availabe.
+The circuit has only a few components and I soldered the components
+on a matrix board and then plugged the board in the pin headers
+of the Alphabot providing the unregulated battery power and
+the regulated 5V.
 
-# Example program
-`printdata` prints data out in tab separated data as `x <tab> y <tab> r <tab> phi`. 
-Pipe it into a textfile and plot if with `gnuplot`:
+The C++ class `Xv11` controls the speed of the motor by using
+the reported RPM to adjust the PWM in a closed loop. It usually
+takes about 5sec to reach a steady state.
+
+# Software
+
+## Xv11 C++ class
+
+The class has `start()` and `stop()` functions which start and
+stop the data acquisition which also start / stop the motor of
+the range finder.
+
+The data is transmitted via `DataInterface` where the abstract function
+`newScanAvail(XV11Data (&data)[Xv11::n])` needs to be implemented
+which then receives both the polar and Cartesian coordinates after
+a successful 360 degree scan. The register the `DataInterface` with
+`registerInterface`.
+
+## Example program
+`printdata` prints tab separated data as
+`x <tab> y <tab> r <tab> phi` until a key is pressed.
+
+Pipe the data into a textfile and plot if with `gnuplot`:
 ```
 sudo ./printdata > tt.tsv
 gnuplot> plot "tt.tsv"
@@ -43,7 +63,7 @@ gnuplot> plot "tt.tsv"
 ![alt tag](map.png)
 
 
-# Data formats for firmware V2.4 and v2.6
+# Raw data format for firmware V2.4 and v2.6
 A full revolution will yield 90 packets, containing 4 consecutive readings each.
 The length of a packet is 22 bytes.
 This amounts to a total of 360 readings (1 per degree) on 1980 bytes.
@@ -102,4 +122,8 @@ that above 320 rpm, data becomes sparse (only one out of two has an actual value
 
 # Credit
 
-This is forked from Dmitry V. Sokolov's git repo: https://github.com/ssloy/neato-xv11-lidar
+This is forked from
+[Dmitry V. Sokolov's git repo](https://github.com/ssloy/neato-xv11-lidar)
+and turned into a C++
+class which also does the motor control.
+
