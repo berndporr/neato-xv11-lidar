@@ -3,14 +3,15 @@
 ![alt tag](robot.jpg)
 
 The project describes how to mount and interface a laser range
-finder from a popular autonomous hoover onto the popular Alphabot.
+finder salvaged from a popular autonomous hoover onto the Alphabot
+(Raspberry PI version).
 
-The actual name of the sensor is Piccolo Laser Distance Sensor, abbreviated into LDS, but many different names are used to refer to it: Neato LDS, Neato lidar, XV-11 lidar, XV-11 sensor...
+The actual name of the sensor is Piccolo Laser Distance Sensor,
+abbreviated into LDS, but many different names are used to refer to
+it: Neato LDS, Neato lidar, XV-11 lidar, XV-11 sensor...
 
 This repository contains a C++ class which reads the coordinates
 and also does the motor control via hardware PWM of the RPI.
-
-Note that this is work in progress and is only sparsely documented at the moment.
 
 # Pinouts
 
@@ -57,8 +58,8 @@ a successful 360 degree scan. Register the `DataInterface` with
 
 Pipe the data into a textfile and plot if with `gnuplot`:
 ```
-sudo ./printdata > tt.tsv
-gnuplot> plot "tt.tsv"
+sudo ./printdata > tt2.tsv
+gnuplot> plot "tt2.tsv"
 ```
 ![alt tag](map.png)
 
@@ -122,8 +123,7 @@ that above 320 rpm, data becomes sparse (only one out of two has an actual value
 
 # Credit
 
-This is forked from
+Forked from
 [Dmitry V. Sokolov's git repo](https://github.com/ssloy/neato-xv11-lidar)
 and turned into a C++
-class which also does the motor control.
-
+class which also does the closed loop motor control.
