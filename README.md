@@ -3,8 +3,9 @@
 ![alt tag](robot.jpg)
 
 The project describes how to mount and interface a laser range
-finder salvaged from a popular autonomous hoover onto the Alphabot
-(Raspberry PI version).
+finder salvaged from a popular autonomous hoover onto the
+[Alphabot](https://www.open-electronics.org/alphabot-the-open-source-robot/)
+ -- Raspberry PI version.
 
 The actual name of the sensor is Piccolo Laser Distance Sensor,
 abbreviated into LDS, but many different names are used to refer to
@@ -16,8 +17,7 @@ and also does the motor control via hardware PWM of the RPI.
 # Pinouts
 
 ## Data
-
-Connect the wires to the serial port of the Raspberry PI.
+Connect the data-wires to the serial port of the Raspberry PI.
 
 ![alt tag](datawiring.png)
 
@@ -31,32 +31,32 @@ of the RPI driving a 2N5550 transistor:
 
 The circuit has only a few components and I soldered the components
 on a matrix board and then plugged the board in the pin headers
-of the Alphabot providing the unregulated battery power and
+of the Alphabot which provides the unregulated battery power and
 the regulated 5V.
 
 The C++ class `Xv11` controls the speed of the motor by using
 the reported RPM to adjust the PWM in a closed loop. It usually
-takes about 5sec to reach a steady state.
+takes about 5 sec to reach a steady state.
 
 # Software
 
 ## Xv11 C++ class
 
 The class has `start()` and `stop()` functions which start and
-stop the data acquisition which also start / stop the motor of
+stop the data acquisition and also start and stop the motor of
 the range finder.
 
 The data is transmitted via `DataInterface` where the abstract function
 `newScanAvail(XV11Data (&data)[Xv11::n])` needs to be implemented
 which then receives both the polar and Cartesian coordinates after
-a successful 360 degree scan. Register the `DataInterface` with
+a successful 360 degree scan. Register your `DataInterface` with
 `registerInterface`.
 
 ## Example program
 `printdata` prints tab separated data as
 `x <tab> y <tab> r <tab> phi` until a key is pressed.
 
-Pipe the data into a textfile and plot if with `gnuplot`:
+Pipe the data into a textfile and plot it with `gnuplot`:
 ```
 sudo ./printdata > tt2.tsv
 gnuplot> plot "tt2.tsv"
@@ -84,7 +84,7 @@ where:
   * `byte 1 : <"invalid data" flag> <"strength warning" flag> <distance 13:8>`
   * `byte 2 : <signal strength 7:0>`
   * `byte 3 : <signal strength 15:8>`
-The distance information is in mm, and coded on 14 bits.The minimum distance is around 15cm, and the maximum distance is around 6m.
+The distance information is in mm, and coded on 14 bits. The minimum distance is around 15cm, and the maximum distance is around 6m.
 When bit 7 of byte 1 is set, it indicates that the distance could not be calculated. When this bit is set, it seems that byte 0 contains an error
 code. Examples of error code are 0x02, 0x03, 0x21, 0x25, 0x35 or 0x50...
 When it's `21`, then the whole block is `21 80 XX XX`, but for all the other values it's the data block is `YY 80 00 00`...
