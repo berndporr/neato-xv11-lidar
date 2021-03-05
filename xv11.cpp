@@ -95,7 +95,7 @@ void Xv11::raw2data(unsigned char *buf) {
 			bool invalid = invalid_data_flag(data);
 			if (!invalid) {
 				int j = (p*4+i);
-				double angle = (double)j / 360.0 * M_PI * 2;
+				double angle = (double)j / 360.0 * M_PI * 2 - M_PI;
 				double dist = dist_mm(data);
 				if (dist > 0) {
 					//fprintf(stderr,"%d,phi=%f,r=%f\n",j,angle,dist);

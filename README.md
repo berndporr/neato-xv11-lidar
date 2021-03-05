@@ -33,6 +33,15 @@ a -10° angle, not 0°. Needs confirmation.
 becomes the bottleneck and packets will be missing, and blow the lower limit the firmware simply does not send anything. It also seems
 that above 320 rpm, data becomes sparse (only one out of two has an actual value).
 
+# Example program
+`printdata` prints data out in tab separated data as `x <tab> y <tab> r <tab> phi`. 
+Pipe it into a textfile and plot if with `gnuplot`:
+```
+sudo ./printdata > tt.tsv
+gnuplot> plot "tt.tsv"
+```
+![alt tag](map.png)
+
 
 # Data formats for firmware V2.4 and v2.6
 A full revolution will yield 90 packets, containing 4 consecutive readings each.
