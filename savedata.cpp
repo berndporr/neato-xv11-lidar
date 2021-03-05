@@ -1,13 +1,25 @@
 #include "xv11.h"
 
-int main(int, char **) {
-	Xv11 xv11;
-	while (1) {
-		for(int i=0; i < xv11.n; i++) {
-			if (xv11.getXYData()[i].valid)
-				printf("%f\t%f\n",
-				       xv11.getXYData()[i].x,
-				       xv11.getXYData()[i].y);
+class Xv11Print : public Xv11 {
+	void newScanAvail() {
+		for(int j=0; j<10; j++) {
+			for(int i=0; i < n; i++) {
+				if (getXYData()[i].valid)
+					printf("%f\t%f\t%f\t%f\n",
+					       getXYData()[i].x,
+					       getXYData()[i].y,
+					       getAngleDistData()[i].r,
+					       getAngleDistData()[i].phi);
+			}
 		}
+		fprintf(stderr,".");
 	}
+};
+
+int main(int, char **) {
+	Xv11Print xv11;
+	do {
+		sleep(1);
+	} while (getchar() != 27);
+	fprintf(stderr,"\n");
 }

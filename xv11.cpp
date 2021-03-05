@@ -93,22 +93,32 @@ void Xv11::translate_data(unsigned char *buf) {
 	currentRPM = rpm(buf);
 	motorDrive = motorDrive + (int)round((desiredRPM - currentRPM) * loopRPMgain);
 	updateMotorPWM();
+	bool dataAvailable = false;
 	for (int p=0; p<90; p++) { // for all 90 packets
 		for (int i=0; i<4; i++) { // process 4 chunks per packet
 			unsigned char *data = buf + p*22 + 4 + i*4; // current chunk pointer
 			bool invalid = invalid_data_flag(data);
-			angleDistData[p].valid = !invalid;
-			xyData[p].valid = !invalid;
 			if (!invalid) {
 				int j = (p*4+i);
 				double angle = (double)j / 360.0 * M_PI * 2;
 				double dist = dist_mm(data);
-				angleDistData[j].phi = angle;
-				angleDistData[j].r = dist;
-				xyData[j].x = cos(angle) * dist;
-				xyData[j].y = sin(angle) * dist;
+				if (dist > 0) {
+					//fprintf(stderr,"%d,phi=%f,r=%f\n",j,angle,dist);
+					angleDistData[j].phi = angle;
+					angleDistData[j].r = dist;
+					xyData[j].x = cos(angle) * dist;
+					xyData[j].y = sin(angle) * dist;
+					angleDistData[j].valid = true;
+					xyData[j].valid = true;
+					dataAvailable = true;
+				} else {
+					xyData[j].valid = false;
+				}
 			}
 		}
+	}
+	if (dataAvailable) {
+		newScanAvail();
 	}
 }
 

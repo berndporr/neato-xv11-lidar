@@ -38,6 +38,7 @@ public:
 	~Xv11() {
 		stop();
 	}
+	virtual void newScanAvail() {};
 private:
 	float rpm(unsigned char *packet);
 	bool verify_packet_checksum(unsigned char *packet);
