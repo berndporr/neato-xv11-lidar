@@ -3,13 +3,13 @@
 class DataInterface : public Xv11::DataInterface {
 public:
 	void newScanAvail(XV11Data (&data)[Xv11::n]) {
-		for(int i=0; i < Xv11::n; i++) {
-			if (data[i].valid)
+		for(XV11Data &data: data) {
+			if (data.valid)
 				printf("%f\t%f\t%f\t%f\n",
-				       data[i].x,
-				       data[i].y,
-				       data[i].r,
-				       data[i].phi);
+				       data.x,
+				       data.y,
+				       data.r,
+				       data.phi);
 		}
 		fprintf(stderr,".");
 	}
