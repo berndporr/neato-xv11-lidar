@@ -48,7 +48,7 @@ int Xv11::signal_strength(unsigned char *data) { // 4 bytes in the data buffer
 }
 
 void Xv11::start(const char *serial_port) {
-	std::cerr << "Opening serial port " << serial_port << std::endl;
+	if (nullptr != worker) return;
 	tty_fd = open(serial_port, O_RDWR);
 	if (tty_fd < 0) {
 		throw "Could not open serial port";
