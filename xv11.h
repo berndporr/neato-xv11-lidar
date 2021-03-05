@@ -27,13 +27,13 @@ public:
 
 class Xv11 {
 public:
-	Xv11(char *serial_port = nullptr);
 	static const int n = 360;
 	const double desiredRPM = 250;
 	const double loopRPMgain = 0.05;
 	AngleDistData (&getAngleDistData())[n] { return angleDistData; }
 	XYData (&getXYData())[n] { return xyData; }
 	float getRPM() { return currentRPM; }
+	void start(const char *serial_port = "/dev/serial0");
 	void stop();
 	~Xv11() {
 		stop();

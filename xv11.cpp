@@ -47,12 +47,7 @@ int Xv11::signal_strength(unsigned char *data) { // 4 bytes in the data buffer
     return data[2] | (data[3] << 8); // 16 bits for the signal strength
 }
 
-Xv11::Xv11(char *serial_port) {
-	char default_port[] = "/dev/serial0";
-	if (nullptr == serial_port) {
-		serial_port = default_port;
-	}
-
+void Xv11::start(const char *serial_port) {
 	std::cerr << "Opening serial port " << serial_port << std::endl;
 	tty_fd = open(serial_port, O_RDWR);
 	if (tty_fd < 0) {
