@@ -13,7 +13,7 @@ public:
 					       getAngleDistData()[i].phi);
 			}
 		}
-		fprintf(stderr,"\n");
+		fprintf(stderr,".");
 	}
 };
 
