@@ -34,7 +34,7 @@ public:
 	}
 
 	struct DataInterface {
-		virtual void newScanAvail(XV11Data (&)[n]) = 0;
+		virtual void newScanAvail(XV11Data (&)[Xv11::n]) = 0;
 	};
 	
 	void registerInterface(DataInterface* di) {
