@@ -1,4 +1,9 @@
-# How to interface the Neato XV11 LIDAR to the Raspberry PI
+# Neato XV11 LIDAR on an Alphabot with a Raspberry PI
+
+![alt tag](robot.jpg)
+
+The project describes how to mount and interface a laser range
+finder from a popular autonomous hoover onto the popular Alphabot.
 
 The actual name of the sensor is Piccolo Laser Distance Sensor, abbreviated into LDS, but many different names are used to refer to it: Neato LDS, Neato lidar, XV-11 lidar, XV-11 sensor...
 
@@ -11,27 +16,22 @@ Note that this is work in progress and is only sparsely documented at the moment
 
 ## Data
 
-* Red +5V
-* Brown LDS_RX
-* OrangeLDS_TX
-* Black GND
+Connect the wires to the serial port of the Raspberry PI.
+
+![alt tag](datawiring.png)
 
 LDS_TX and LDS_RX are at **3.3V**.
 
 ## Motor
-The motor is driven by via the hard PWM pin of the RPI. See
-[neato_rpi_hardware.pdf] for the circuit which can be
-simply soldered on a matrix board and wired to the motor:
+The motor is driven by via the hardware PWM pin of the RPI driving
+a 2N5550 transistor:
 
-* Red PWR
-* BlackGND
+![alt tag](motordrive.png)
 
-# Gotchas
-* The angle of the data is not aligned with the natural axis of the device. It seems that the first sample of the first packet is in fact looking at
-a -10° angle, not 0°. Needs confirmation.
-* v2.4 and above: The sensor needs to be turning between 180 and 349 rpm to transmit valid data. Above 349 rpm, the serial interface
-becomes the bottleneck and packets will be missing, and blow the lower limit the firmware simply does not send anything. It also seems
-that above 320 rpm, data becomes sparse (only one out of two has an actual value).
+The circuit has only a few components and I used soldered the components
+on a matrix board where the two pin headers of the Alphabot
+fit nicely over the not used Arduino slot where also the
+unregulated power from the battery is availabe.
 
 # Example program
 `printdata` prints data out in tab separated data as `x <tab> y <tab> r <tab> phi`. 
@@ -90,6 +90,14 @@ def checksum(data):
     checksum = checksum & 0x7FFF # truncate to 15 bits
     return int( checksum )
 ```
+
+# Gotchas
+* The angle of the data is not aligned with the natural axis of the device. It seems that the first sample of the first packet is in fact looking at
+a -10° angle, not 0°. Needs confirmation.
+* v2.4 and above: The sensor needs to be turning between 180 and 349 rpm to transmit valid data. Above 349 rpm, the serial interface
+becomes the bottleneck and packets will be missing, and blow the lower limit the firmware simply does not send anything. It also seems
+that above 320 rpm, data becomes sparse (only one out of two has an actual value).
+
 
 
 # Credit
