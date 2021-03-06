@@ -21,9 +21,9 @@ bool Xv11::verify_packet_checksum(unsigned char *packet) { // 22 bytes in the pa
     return packet[20]+(packet[21]<<8) == (((checksum32 & 0x7FFF) + (checksum32 >> 15)) & 0x7FFF);
 }
 
-int Xv11::count_errors(unsigned char *buf) { // 1980 bytes in the buffer (90 packets)
-    int nb_err = 0;
-    for (int i=0; i<90; i++) {
+unsigned Xv11::count_errors(unsigned char *buf) { // 1980 bytes in the buffer (90 packets)
+    unsigned nb_err = 0;
+    for (int i=0; i<nPackets; i++) {
         nb_err += !verify_packet_checksum(buf+i*22);
     }
     return nb_err;
@@ -39,16 +39,17 @@ bool Xv11::strength_warning_flag(unsigned char *data) { // 4 bytes in the data b
     return (data[1] & 0x40) >> 6;
 }
 
-int Xv11::dist_mm(unsigned char *data) { // 4 bytes in the data buffer
+unsigned Xv11::dist_mm(unsigned char *data) { // 4 bytes in the data buffer
     return data[0] | (( data[1] & 0x3F) << 8); // 14 bits for the distance
 }
 
-int Xv11::signal_strength(unsigned char *data) { // 4 bytes in the data buffer
+unsigned Xv11::signal_strength(unsigned char *data) { // 4 bytes in the data buffer
     return data[2] | (data[3] << 8); // 16 bits for the signal strength
 }
 
-void Xv11::start(const char *serial_port) {
+void Xv11::start(const unsigned rpm, const char *serial_port) {
 	if (nullptr != worker) return;
+	desiredRPM = (float)rpm;
 	tty_fd = open(serial_port, O_RDWR);
 	if (tty_fd < 0) {
 		throw "Could not open serial port";
@@ -79,17 +80,16 @@ void Xv11::start(const char *serial_port) {
 }
 
 void Xv11::updateMotorPWM() {
-	if (motorDrive > 500) motorDrive = 500;
+	if (motorDrive > maxPWM) motorDrive = maxPWM;
 	pwmWrite (1, motorDrive);
 	//fprintf(stderr,"motorDrive = %d\n",motorDrive);
 }
 
 void Xv11::raw2data(unsigned char *buf) {
-	currentRPM = rpm(buf);
-	motorDrive = motorDrive + (int)round((desiredRPM - currentRPM) * loopRPMgain);
-	updateMotorPWM();
 	bool dataAvailable = false;
-	for (int p=0; p<90; p++) { // for all 90 packets
+	float avgRPM = 0;
+	for (int p=0; p<nPackets; p++) { // for all 90 packets
+		avgRPM += rpm(buf + p*22);
 		for (int i=0; i<4; i++) { // process 4 chunks per packet
 			unsigned char *data = buf + p*22 + 4 + i*4; // current chunk pointer
 			bool invalid = invalid_data_flag(data);
@@ -97,12 +97,15 @@ void Xv11::raw2data(unsigned char *buf) {
 				int j = (p*4+i);
 				double angle = (double)j / 360.0 * M_PI * 2 - M_PI;
 				double dist = dist_mm(data);
+				double strength = signal_strength(data) / (double)(1 << 16);
 				if (dist > 0) {
 					//fprintf(stderr,"%d,phi=%f,r=%f\n",j,angle,dist);
 					xv11data[currentBufIdx][j].phi = angle;
 					xv11data[currentBufIdx][j].r = dist;
 					xv11data[currentBufIdx][j].x = cos(angle) * dist;
 					xv11data[currentBufIdx][j].y = sin(angle) * dist;
+					xv11data[currentBufIdx][j].signal_strength = strength;
+					xv11data[currentBufIdx][j].too_close = strength_warning_flag(data);
 					xv11data[currentBufIdx][j].valid = true;
 					dataAvailable = true;
 				} else {
@@ -111,10 +114,15 @@ void Xv11::raw2data(unsigned char *buf) {
 			}
 		}
 	}
+	currentRPM = avgRPM / nPackets;
+	motorDrive = motorDrive + (int)round((desiredRPM - currentRPM) * loopRPMgain);
+	updateMotorPWM();
 	if ( (dataAvailable) && (nullptr != dataInterface) ) {
 		dataInterface->newScanAvail(xv11data[currentBufIdx]);
 	}
+	readoutMtx.lock();
 	currentBufIdx = !currentBufIdx;
+	readoutMtx.unlock();
 }
 
 void Xv11::run(Xv11* xv11) {
@@ -128,8 +136,8 @@ void Xv11::run(Xv11* xv11) {
 			for (int idx=2; idx<1980; idx++)
 				// register all the 360 readings (90 packets, 22 bytesh each)
 				if (1!=read(xv11->tty_fd, buf+idx, 1)) break;
-			if (!(xv11->count_errors(buf))) { // if no errors during the transmission
-				xv11->raw2data(buf);  // then print the data to the screen
+			if (!(xv11->count_errors(buf))) {
+				xv11->raw2data(buf);
 			}
 		}
 	}

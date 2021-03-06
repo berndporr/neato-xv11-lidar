@@ -31,7 +31,7 @@ of the RPI driving a 2N5550 transistor:
 
 The circuit has only a few components and I soldered the components
 on a matrix board and then plugged the board in the pin headers
-of the Alphabot which provides the unregulated battery power and
+of the Alphabot which provide the unregulated battery power and
 the regulated 5V.
 
 The C++ class `Xv11` controls the speed of the motor by using
@@ -54,7 +54,7 @@ a successful 360 degree scan. Register your `DataInterface` with
 
 ## Example program
 `printdata` prints tab separated data as
-`x <tab> y <tab> r <tab> phi` until a key is pressed.
+`x <tab> y <tab> r <tab> phi <tab> strength <tab> too_close` until a key is pressed.
 
 Pipe the data into a textfile and plot it with `gnuplot`:
 ```
