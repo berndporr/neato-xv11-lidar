@@ -2,7 +2,7 @@
 #include <math.h>
 
 void Xv11::stop() {
-	running = 0;
+	running = false;
 	if (nullptr != worker) {
 		worker->join();
 		delete worker;
