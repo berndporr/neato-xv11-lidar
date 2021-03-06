@@ -73,9 +73,9 @@ public:
 	 * roughly betweeen 200 and 300. The serial port
 	 * is the one which talks to the XV11.
 	 **/
-	void start(const unsigned rpm = 250,
-		   const char *serial_port = "/dev/serial0");
-
+	void start(const char *serial_port = "/dev/serial0",
+		   const unsigned rpm = 250);
+		   
 	/**
 	 * Stops the data acquisition
 	 **/
@@ -103,9 +103,9 @@ public:
 	}
 
 	/**
-	 * Returns the current databuffer which is not written to.
+	 * Returns the current databuffer which is not being written to.
 	 **/
-	XV11Data (&getCurrentData())[nDistance]  {
+	inline XV11Data (&getCurrentData())[nDistance]  {
 		readoutMtx.lock();
 		return xv11data[!currentBufIdx];
 		readoutMtx.unlock();
@@ -114,12 +114,12 @@ public:
 	/**
 	 * Returns the current RPM
 	 **/
-	float getRPM() { return currentRPM; }
+	double getRPM() { return (double)currentRPM; }
 
 private:
 	static const int maxPWM = 500;
 	float desiredRPM = 250;
-	const float loopRPMgain = 0.1f;
+	const float loopRPMgain = 0.02f;
 	static const int nPackets = 90;
 	DataInterface* dataInterface = nullptr;
 	float rpm(unsigned char *packet);

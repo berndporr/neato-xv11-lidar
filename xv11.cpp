@@ -47,7 +47,8 @@ unsigned Xv11::signal_strength(unsigned char *data) { // 4 bytes in the data buf
     return data[2] | (data[3] << 8); // 16 bits for the signal strength
 }
 
-void Xv11::start(const unsigned rpm, const char *serial_port) {
+void Xv11::start(const char *serial_port, 
+		 const unsigned rpm) {
 	if (nullptr != worker) return;
 	desiredRPM = (float)rpm;
 	tty_fd = open(serial_port, O_RDWR);
@@ -144,4 +145,6 @@ void Xv11::run(Xv11* xv11) {
 	xv11->motorDrive = 0;
 	xv11->updateMotorPWM();
 	close(xv11->tty_fd);
+	pwmWrite (1, 0);
+	pinMode (1, INPUT);
 }
