@@ -2,8 +2,8 @@
 
 ![alt tag](robot.jpg)
 
-The project describes how to mount and interface a laser range
-finder salvaged from a popular autonomous hoover onto the
+The project describes how to mount and interface the XV11 laser range
+finder onto the
 [Alphabot](https://www.open-electronics.org/alphabot-the-open-source-robot/)
  -- Raspberry PI version.
 
@@ -29,10 +29,9 @@ of the RPI driving a 2N5550 transistor:
 
 ![alt tag](motordrive.png)
 
-The circuit has only a few components and I soldered the components
-on a matrix board and then plugged the board in the pin headers
-of the Alphabot which provide the unregulated battery power and
-the regulated 5V.
+The circuit has only a few components. I soldered the components
+on a matrix board and then plugged the board into the pin header
+of the Alphabot.
 
 The C++ class `Xv11` controls the speed of the motor by using
 the reported RPM to adjust the PWM in a closed loop. It usually
@@ -47,7 +46,7 @@ stop the data acquisition and also start and stop the motor of
 the range finder.
 
 The data is transmitted via `DataInterface` where the abstract function
-`newScanAvail(XV11Data (&data)[Xv11::n])` needs to be implemented
+`newScanAvail(XV11Data (&data)[Xv11::nDistance])` needs to be implemented
 which then receives both the polar and Cartesian coordinates after
 a successful 360 degree scan. Register your `DataInterface` with
 `registerInterface`.

@@ -6,17 +6,20 @@
 
 int main (int argc, char* argv[]) {
 
-  if (argc < 2) {
-    fprintf(stderr,"Value, please!\n");
-    return -1;
-  }
+	int v = 0;
+	
+	if (argc > 1) {
+		v = atoi(argv[1]);
+	}
   
-  if (wiringPiSetup () == -1)
-    exit (1) ;
+	if (wiringPiSetup () == -1)
+		throw "Could not init WiringPI\n";
   
-  pinMode (1, PWM_OUTPUT);
+	pinMode (1, PWM_OUTPUT);
+	
+	if (v > 500) v = 500;
   
-  pwmWrite (1, atoi(argv[1]));
-  
-  return 0 ;
+	pwmWrite (1, v);
+	
+	return 0 ;
 }
