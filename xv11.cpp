@@ -51,9 +51,11 @@ void Xv11::start(const char *serial_port,
 		 const unsigned rpm) {
 	if (nullptr != worker) return;
 	desiredRPM = (float)rpm;
+
+	// serial port init
 	tty_fd = open(serial_port, O_RDWR);
 	if (tty_fd < 0) {
-		throw "Could not open serial port";
+		throw "Could not open serial port.";
 	}
 // 115200 baud 8n1 blocking read
 	struct termios tty_opt;
@@ -69,20 +71,28 @@ void Xv11::start(const char *serial_port,
 	cfsetispeed(&tty_opt, B115200);
 	tcsetattr(tty_fd, TCSANOW, &tty_opt);
 
-	if (wiringPiSetup () == -1) {
-		throw "Could not set up wiring Pi. Might need to run as sudo.";
+	// init PWM
+	set_mode(pi,GPIO_PWM,PI_OUTPUT);
+	set_PWM_frequency(pi,GPIO_PWM,pwm_frequency);
+	int rr = get_PWM_real_range(pi, GPIO_PWM);
+        if ( ( rr > 255) && (rr < 20000) ) set_PWM_range(pi, GPIO_PWM, rr);
+	pwmRange = get_PWM_range(pi, GPIO_PWM);
+	if ( (pwmRange == PI_BAD_USER_GPIO) || (pwmRange < 25) ) {
+		stop();
+		const char msg[] = "Fatal GPIO error: Could not get the PWM range.";
+		throw msg;
 	}
-  
-	pinMode (1, PWM_OUTPUT);
+	maxPWM = pwmRange / 2;
 
-	updateMotorPWM();
+	updateMotorPWM(maxPWM / 2);
 	
 	worker = new std::thread(Xv11::run,this);
 }
 
-void Xv11::updateMotorPWM() {
+void Xv11::updateMotorPWM(int _motorDrive) {
+	motorDrive = _motorDrive;
 	if (motorDrive > maxPWM) motorDrive = maxPWM;
-	pwmWrite (1, motorDrive);
+	set_PWM_dutycycle(pi,GPIO_PWM,motorDrive);
 	//fprintf(stderr,"motorDrive = %d\n",motorDrive);
 }
 
@@ -116,8 +126,10 @@ void Xv11::raw2data(unsigned char *buf) {
 		}
 	}
 	currentRPM = avgRPM / nPackets;
-	motorDrive = motorDrive + (int)round((desiredRPM - currentRPM) * loopRPMgain);
-	updateMotorPWM();
+	updateMotorPWM(
+		       motorDrive +
+		       (int)round((desiredRPM - currentRPM) * loopRPMgain * (float)pwmRange)
+		       );
 	if ( (dataAvailable) && (nullptr != dataInterface) ) {
 		dataInterface->newScanAvail(xv11data[currentBufIdx]);
 	}
@@ -142,9 +154,8 @@ void Xv11::run(Xv11* xv11) {
 			}
 		}
 	}
-	xv11->motorDrive = 0;
-	xv11->updateMotorPWM();
+	xv11->updateMotorPWM(0);
 	close(xv11->tty_fd);
-	pwmWrite (1, 0);
-	pinMode (1, INPUT);
+	set_PWM_dutycycle(xv11->pi,GPIO_PWM,0);
+	set_mode(xv11->pi,GPIO_PWM,PI_INPUT);
 }

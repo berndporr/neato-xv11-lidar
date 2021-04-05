@@ -6,9 +6,11 @@
 #include <unistd.h>
 #include <termios.h>
 #include <fcntl.h>
-#include <wiringPi.h>
+#include <pigpiod_if2.h>
 #include <thread>
 #include <mutex>
+
+
 
 /**
  * One of the 360 distance datapoints
@@ -81,11 +83,19 @@ public:
 	 **/
 	void stop();
 
+	Xv11(int _pi = -1) {
+		if (_pi < 0) {
+			pi = pigpio_start(NULL,NULL);
+		}
+	}
+
 	/**
 	 * Destructor which stops the motor and the data acquisition thread.
 	 **/
 	~Xv11() {
 		stop();
+		if (pi < 0) return;
+		pigpio_stop(pi);
 	}
 
 	/**
@@ -116,10 +126,17 @@ public:
 	 **/
 	double getRPM() { return (double)currentRPM; }
 
+	/**
+	 * Returns the actual PWM range
+	 **/
+	int getPWMrange() { return pwmRange; }
+
 private:
-	static const int maxPWM = 500;
+	static const int GPIO_PWM = 18;
+	int maxPWM = 1;
+	static const int pwm_frequency = 50;
 	float desiredRPM = 250;
-	const float loopRPMgain = 0.02f;
+	const float loopRPMgain = 0.00005f;
 	static const int nPackets = 90;
 	DataInterface* dataInterface = nullptr;
 	float rpm(unsigned char *packet);
@@ -130,16 +147,18 @@ private:
 	unsigned dist_mm(unsigned char *data);
 	unsigned signal_strength(unsigned char *data);
 	void raw2data(unsigned char *buf);
-	void updateMotorPWM();
+	void updateMotorPWM(int newMotorDrive);
 	static void run(Xv11* xv11);
 	int tty_fd = 0;
 	bool running = true;
-        unsigned motorDrive = 250;
+        int motorDrive = 50;
 	XV11Data xv11data[2][nDistance];
 	std::thread* worker = nullptr;
 	float currentRPM = 0;
 	unsigned currentBufIdx = 0;
 	std::mutex readoutMtx;
+	int pi = -1;
+	int pwmRange = -1;
 };
 
 #endif

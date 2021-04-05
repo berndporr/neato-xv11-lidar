@@ -39,6 +39,13 @@ takes about 5 sec to reach a steady state.
 
 # Software
 
+## Prerequisites
+
+Install the pigpio demon package and development headers:
+```
+apt-get install libpigpiod-if-dev
+```
+
 ## Xv11 C++ class
 
 The class has `start()` and `stop()` functions which start and

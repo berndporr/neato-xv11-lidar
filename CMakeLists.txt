@@ -24,7 +24,7 @@ set_target_properties(xv11 PROPERTIES
   SOVERSION 1
   PUBLIC_HEADER "${LIBINCLUDE}")
 
-target_link_libraries(xv11 wiringPi ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(xv11 ${CMAKE_THREAD_LIBS_INIT} pigpiod_if2 rt)
 
 install(TARGETS xv11 EXPORT xv11-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -39,7 +39,7 @@ add_library(xv11_static
 set_target_properties(xv11_static PROPERTIES
   PUBLIC_HEADER "${LIBINCLUDE}")
 
-target_link_libraries(xv11_static wiringPi ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(xv11_static ${CMAKE_THREAD_LIBS_INIT} pigpiod_if2 rt)
 
 install(TARGETS xv11_static EXPORT xv11_static-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -53,4 +53,4 @@ add_executable (printRPM printRPM.cpp)
 target_link_libraries(printRPM xv11_static)
 
 add_executable (pwm pwm.cpp)
-target_link_libraries(pwm wiringPi)
+target_link_libraries(pwm pigpiod_if2 rt)
