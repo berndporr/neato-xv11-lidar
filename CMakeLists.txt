@@ -24,7 +24,7 @@ set_target_properties(xv11 PROPERTIES
   SOVERSION 1
   PUBLIC_HEADER "${LIBINCLUDE}")
 
-target_link_libraries(xv11 ${CMAKE_THREAD_LIBS_INIT} pigpiod_if2 rt)
+target_link_libraries(xv11 ${CMAKE_THREAD_LIBS_INIT} pigpio rt)
 
 install(TARGETS xv11 EXPORT xv11-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -39,7 +39,7 @@ add_library(xv11_static
 set_target_properties(xv11_static PROPERTIES
   PUBLIC_HEADER "${LIBINCLUDE}")
 
-target_link_libraries(xv11_static ${CMAKE_THREAD_LIBS_INIT} pigpiod_if2 rt)
+target_link_libraries(xv11_static ${CMAKE_THREAD_LIBS_INIT} pigpio rt)
 
 install(TARGETS xv11_static EXPORT xv11_static-targets
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

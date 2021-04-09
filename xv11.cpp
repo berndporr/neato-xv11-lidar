@@ -72,11 +72,11 @@ void Xv11::start(const char *serial_port,
 	tcsetattr(tty_fd, TCSANOW, &tty_opt);
 
 	// init PWM
-	set_mode(pi,GPIO_PWM,PI_OUTPUT);
-	set_PWM_frequency(pi,GPIO_PWM,pwm_frequency);
-	int rr = get_PWM_real_range(pi, GPIO_PWM);
-        if ( ( rr > 255) && (rr < 20000) ) set_PWM_range(pi, GPIO_PWM, rr);
-	pwmRange = get_PWM_range(pi, GPIO_PWM);
+	gpioSetMode(GPIO_PWM,PI_OUTPUT);
+	gpioSetPWMfrequency(GPIO_PWM,pwm_frequency);
+	int rr = gpioGetPWMrealRange(GPIO_PWM);
+        if ( ( rr > 255) && (rr < 20000) ) gpioSetPWMrange(GPIO_PWM, rr);
+	pwmRange = gpioGetPWMrange(GPIO_PWM);
 	if ( (pwmRange == PI_BAD_USER_GPIO) || (pwmRange < 25) ) {
 		stop();
 		const char msg[] = "Fatal GPIO error: Could not get the PWM range.";
@@ -92,7 +92,7 @@ void Xv11::start(const char *serial_port,
 void Xv11::updateMotorPWM(int _motorDrive) {
 	motorDrive = _motorDrive;
 	if (motorDrive > maxPWM) motorDrive = maxPWM;
-	set_PWM_dutycycle(pi,GPIO_PWM,motorDrive);
+	gpioPWM(GPIO_PWM,motorDrive);
 	//fprintf(stderr,"motorDrive = %d\n",motorDrive);
 }
 
@@ -156,6 +156,6 @@ void Xv11::run(Xv11* xv11) {
 	}
 	xv11->updateMotorPWM(0);
 	close(xv11->tty_fd);
-	set_PWM_dutycycle(xv11->pi,GPIO_PWM,0);
-	set_mode(xv11->pi,GPIO_PWM,PI_INPUT);
+	gpioPWM(GPIO_PWM,0);
+	gpioSetMode(GPIO_PWM,PI_INPUT);
 }

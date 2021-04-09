@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <termios.h>
 #include <fcntl.h>
-#include <pigpiod_if2.h>
+#include <pigpio.h>
 #include <thread>
 #include <mutex>
 
@@ -83,10 +83,11 @@ public:
 	 **/
 	void stop();
 
-	Xv11(int _pi = -1) {
-		if (_pi < 0) {
-			pi = pigpio_start(NULL,NULL);
-		}
+	Xv11() {
+		if (gpioInitialise() < 0)
+			{
+				throw "pioInitialise failed";
+			}
 	}
 
 	/**
@@ -94,8 +95,7 @@ public:
 	 **/
 	~Xv11() {
 		stop();
-		if (pi < 0) return;
-		pigpio_stop(pi);
+		gpioTerminate();
 	}
 
 	/**
@@ -157,7 +157,6 @@ private:
 	float currentRPM = 0;
 	unsigned currentBufIdx = 0;
 	std::mutex readoutMtx;
-	int pi = -1;
 	int pwmRange = -1;
 };
 
