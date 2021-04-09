@@ -83,11 +83,13 @@ public:
 	 **/
 	void stop();
 
-	Xv11() {
-		if (gpioInitialise() < 0)
-			{
-				throw "pioInitialise failed";
-			}
+	Xv11(bool doInit = true) {
+		if (!doInit) {
+			return;
+		}
+		if (gpioInitialise() < 0) {
+			throw "gpioInitialise failed";
+		}
 	}
 
 	/**
