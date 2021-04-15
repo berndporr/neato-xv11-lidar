@@ -43,7 +43,7 @@ takes about 5 sec to reach a steady state.
 
 Install the pigpio demon package and development headers:
 ```
-apt-get install libpigpiod-if-dev
+apt-get install libpigpio-dev
 ```
 
 ## Xv11 C++ class
