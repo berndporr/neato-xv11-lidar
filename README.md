@@ -41,7 +41,7 @@ takes about 5 sec to reach a steady state.
 
 ## Prerequisites
 
-Install the pigpio demon package and development headers:
+Install the pigpio package and development headers:
 ```
 apt-get install libpigpio-dev
 ```
