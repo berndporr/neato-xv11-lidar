@@ -83,13 +83,8 @@ public:
 	 **/
 	void stop();
 
-	Xv11(bool doInit = true) {
-		if (!doInit) {
-			return;
-		}
-		if (gpioInitialise() < 0) {
-			throw "gpioInitialise failed";
-		}
+	Xv11(bool _doInit = true) {
+		doInit = _doInit;
 	}
 
 	/**
@@ -160,6 +155,7 @@ private:
 	unsigned currentBufIdx = 0;
 	std::mutex readoutMtx;
 	int pwmRange = -1;
+	bool doInit = true;
 };
 
 #endif

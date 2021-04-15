@@ -8,6 +8,9 @@ void Xv11::stop() {
 		delete worker;
 		worker = nullptr;
 	}
+	if (doInit) {
+		gpioTerminate();
+	}
 }
 
 float Xv11::rpm(unsigned char *packet) { // 22 bytes in the packet
@@ -50,6 +53,13 @@ unsigned Xv11::signal_strength(unsigned char *data) { // 4 bytes in the data buf
 void Xv11::start(const char *serial_port, 
 		 const unsigned rpm) {
 	if (nullptr != worker) return;
+
+	if (doInit) {
+		if (gpioInitialise() < 0) {
+			throw "gpioInitialise failed";
+		}
+	}
+
 	desiredRPM = (float)rpm;
 
 	// serial port init
