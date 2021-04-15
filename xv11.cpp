@@ -107,7 +107,7 @@ void Xv11::raw2data(unsigned char *buf) {
 			if (!invalid) {
 				int j = (p*4+i);
 				double angle = (double)j / 360.0 * M_PI * 2 - M_PI;
-				double dist = dist_mm(data);
+				double dist = (double)(dist_mm(data)) / 1000.0;
 				double strength = signal_strength(data) / (double)(1 << 16);
 				if (dist > 0) {
 					//fprintf(stderr,"%d,phi=%f,r=%f\n",j,angle,dist);

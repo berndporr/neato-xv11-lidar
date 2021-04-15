@@ -18,7 +18,7 @@
 class XV11Data {
 public:
 	/**
-	 * Distance in mm
+	 * Distance in m
 	 **/
 	double r;
 	
@@ -28,13 +28,13 @@ public:
 	double phi;
 
 	/**
-	 * X position where positive values are in front
+	 * X position in m where positive values are in front
 	 * of the robot and negative behind.
 	 **/
 	double x;
 
 	/**
-	* Y position where positive values are left in front of the
+	* Y position in m where positive values are left in front of the
 	* robot and negative right in front of the robot.
 	**/
 	double y;
