@@ -26,29 +26,29 @@ public:
 	/**
 	 * Distance in m
 	 **/
-	double r;
+	float r;
 	
 	/**
 	 * Angle in rad with phi=0 in front of the robot
 	 **/
-	double phi;
+	float phi;
 
 	/**
 	 * X position in m where positive values are in front
 	 * of the robot and negative behind.
 	 **/
-	double x;
+	float x;
 
 	/**
 	* Y position in m where positive values are left in front of the
 	* robot and negative right in front of the robot.
 	**/
-	double y;
+	float y;
 
 	/**
 	 * Signal strength as a value between 0 and 1.
 	 **/
-	double signal_strength = 0;
+	float signal_strength = 0;
 
 	/**
 	 * Flag if the object is too close.
@@ -127,7 +127,7 @@ public:
 	/**
 	 * Returns the current RPM
 	 **/
-	double getRPM() { return (double)currentRPM; }
+	float getRPM() { return (float)currentRPM; }
 
 	/**
 	 * Returns the actual PWM range

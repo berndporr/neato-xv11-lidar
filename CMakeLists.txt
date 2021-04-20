@@ -38,4 +38,4 @@ add_executable (printRPM printRPM.cpp)
 target_link_libraries(printRPM xv11)
 
 add_executable (pwm pwm.cpp)
-target_link_libraries(pwm pigpiod_if2 rt)
+target_link_libraries(pwm pigpio rt ${CMAKE_THREAD_LIBS_INIT})

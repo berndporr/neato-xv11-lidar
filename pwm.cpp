@@ -1,4 +1,4 @@
-#include <pigpiod_if2.h>
+#include <pigpio.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -13,23 +13,23 @@ int main (int argc, char* argv[]) {
 		v = atoi(argv[1]);
 	}
   
-	int pi = pigpio_start(NULL,NULL);
+	int pi = gpioInitialise();
 	if ( pi < 0 ) {
-		fprintf(stderr,"Could not connect to the daemon.\n");
+		fprintf(stderr,"Could not init pigpio.\n");
 		exit(1);
 	}
   
-	set_mode(pi,GPIO,PI_OUTPUT);
+	gpioSetMode(GPIO,PI_OUTPUT);
 	
 	if (v > 100) v = 100;
   
-	set_PWM_dutycycle(pi,18,v);
+	gpioPWM(GPIO,v);
 
 	getchar();
 
-	set_PWM_dutycycle(pi,18,0);
+	gpioPWM(GPIO,0);
 
-	pigpio_stop(pi);
+	gpioTerminate();
 	
 	return 0 ;
 }

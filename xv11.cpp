@@ -116,9 +116,9 @@ void Xv11::raw2data(unsigned char *buf) {
 			bool invalid = invalid_data_flag(data);
 			if (!invalid) {
 				int j = (p*4+i);
-				double angle = (double)j / 360.0 * M_PI * 2 - M_PI;
-				double dist = (double)(dist_mm(data)) / 1000.0;
-				double strength = signal_strength(data) / (double)(1 << 16);
+				float angle = (float)j / 360.0f * (float)M_PI * 2.0f - (float)M_PI;
+				float dist = (float)(dist_mm(data)) / 1000.0f;
+				float strength = (float)(signal_strength(data)) / (float)(1 << 16);
 				if (dist > 0) {
 					//fprintf(stderr,"%d,phi=%f,r=%f\n",j,angle,dist);
 					xv11data[currentBufIdx][j].phi = angle;
