@@ -141,7 +141,7 @@ void Xv11::raw2data(unsigned char *buf) {
 		       (int)round((desiredRPM - currentRPM) * loopRPMgain * (float)pwmRange)
 		       );
 	if ( (dataAvailable) && (nullptr != dataInterface) ) {
-		dataInterface->newScanAvail(xv11data[currentBufIdx]);
+		dataInterface->newScanAvail(currentRPM, xv11data[currentBufIdx]);
 	}
 	readoutMtx.lock();
 	currentBufIdx = !currentBufIdx;

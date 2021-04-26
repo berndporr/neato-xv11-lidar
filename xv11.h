@@ -105,7 +105,7 @@ public:
 	 * Callback interface which needs to be implemented by the user.
 	 **/
 	struct DataInterface {
-		virtual void newScanAvail(XV11Data (&)[Xv11::nDistance]) = 0;
+		virtual void newScanAvail(float rpm, XV11Data (&)[Xv11::nDistance]) = 0;
 	};
 
 	/**
