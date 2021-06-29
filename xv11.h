@@ -139,7 +139,7 @@ private:
 	int maxPWM = 1;
 	static const int pwm_frequency = 50;
 	float desiredRPM = 250;
-	const float loopRPMgain = 0.00005f;
+	const float loopRPMgain = 0.00006f;
 	static const int nPackets = 90;
 	DataInterface* dataInterface = nullptr;
 	float rpm(unsigned char *packet);

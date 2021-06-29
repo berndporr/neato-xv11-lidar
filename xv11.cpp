@@ -92,9 +92,9 @@ void Xv11::start(const char *serial_port,
 		const char msg[] = "Fatal GPIO error: Could not get the PWM range.";
 		throw msg;
 	}
-	maxPWM = pwmRange / 2;
+	maxPWM = (int)(pwmRange / 1.1);
 
-	updateMotorPWM(maxPWM / 2);
+	updateMotorPWM(maxPWM / 5);
 	
 	worker = new std::thread(Xv11::run,this);
 }
